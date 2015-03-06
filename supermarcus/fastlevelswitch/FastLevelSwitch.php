@@ -5,6 +5,7 @@ use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 use supermarcus\fastlevelswitch\chunk\ChunkCashManager;
@@ -74,14 +75,16 @@ class FastLevelSwitch {
      * Pre-load chunks for a player
      *
      * @param Player $player
-     * @param Position $pos
+     * @param Vector3 $pos
      */
-    public static function preLoadChunks(Player $player, Position $pos = null){
-        $level = ($pos->getLevel() instanceof Level) ? $pos->getLevel() : $player->getLevel();
+    public static function preLoadChunks(Player $player, Vector3 $pos = null){
+        /** @var $pos Position */
+        $level = ($pos instanceof Position) and ($pos->getLevel() instanceof Level) ? $pos->getLevel() : $player->getLevel();
+        $target = ($pos instanceof Vector3) ? $pos : $player;
 
         if($level instanceof Level){
-            $middleX = $pos->getFloorX() >> 4;
-            $middleZ = $pos->getFloorZ() >> 4;
+            $middleX = $target->getFloorX() >> 4;
+            $middleZ = $target->getFloorZ() >> 4;
             for($x = $middleX - 2; $x < $middleX + 2; ++$x){
                 for($z = $middleZ - 2; $z < $middleZ + 2; ++$z){
                     if(FastLevelSwitch::getInstance()->getChunkManager()->isChunkCashed($level->getId(), $x, $z)){
