@@ -8,7 +8,7 @@ use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
-use supermarcus\fastlevelswitch\chunk\ChunkCashManager;
+use supermarcus\fastlevelswitch\chunk\ChunkCacheManager;
 use supermarcus\fastlevelswitch\task\AnvilChunkRequest;
 use supermarcus\fastlevelswitch\task\ChunkUpdateTask;
 use supermarcus\fastlevelswitch\task\DelayPlayerTeleportTask;
@@ -87,17 +87,17 @@ class FastLevelSwitch {
             $middleZ = $target->getFloorZ() >> 4;
             for($x = $middleX - 2; $x < $middleX + 2; ++$x){
                 for($z = $middleZ - 2; $z < $middleZ + 2; ++$z){
-                    if(FastLevelSwitch::getInstance()->getChunkManager()->isChunkCashed($level->getId(), $x, $z)){
+                    if(FastLevelSwitch::getInstance()->getChunkManager()->isChunkCached($level->getId(), $x, $z)){
                         $player->sendChunk($x, $z, FastLevelSwitch::getInstance()->getChunkManager()->getChunk($level, $x, $z));
                     }else{
-                        FastLevelSwitch::cashChunk($x, $z, $level);
+                        FastLevelSwitch::cacheChunk($x, $z, $level);
                     }
                 }
             }
         }
     }
 
-    public static function cashChunk($x, $z, Level $level){
+    public static function cacheChunk($x, $z, Level $level){
         $provider = $level->getProvider();
         if($provider !== null){
             if($provider instanceof Anvil){
@@ -110,24 +110,24 @@ class FastLevelSwitch {
         }
     }
 
-    public static function isChunkCashed($x, $z, Level $level){
-        return FastLevelSwitch::getInstance()->getChunkManager()->isChunkCashed($level->getId(), $x, $z);
+    public static function isChunkCached($x, $z, Level $level){
+        return FastLevelSwitch::getInstance()->getChunkManager()->isChunkCached($level->getId(), $x, $z);
     }
 
     /** @var Server */
     private $server;
 
-    /** @var ChunkCashManager */
+    /** @var ChunkCacheManager */
     private $chunkManager;
 
     public function __construct(Server $server){
         $this->server = $server;
-        $this->chunkManager = new ChunkCashManager($this);
+        $this->chunkManager = new ChunkCacheManager($this);
         $server->getScheduler()->scheduleRepeatingTask(new ChunkUpdateTask($this), FastLevelSwitch::UPDATE_PERIOD);
     }
 
     /**
-     * @return ChunkCashManager
+     * @return ChunkCacheManager
      */
     public function getChunkManager(){
         return $this->chunkManager;

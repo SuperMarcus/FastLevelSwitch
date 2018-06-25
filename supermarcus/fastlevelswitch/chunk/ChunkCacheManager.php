@@ -5,15 +5,15 @@ use pocketmine\level\Level;
 use pocketmine\utils\Binary;
 use supermarcus\fastlevelswitch\FastLevelSwitch;
 
-class ChunkCashManager {
+class ChunkCacheManager {
     /** @var string[] */
-    private $cashes;
+    private $caches;
 
     /** @var FastLevelSwitch */
     private $fastLevelSwitch;
 
     public function __construct(FastLevelSwitch $fastLevelSwitch){
-        $this->cashes = [];
+        $this->caches = [];
         $this->fastLevelSwitch = $fastLevelSwitch;
     }
 
@@ -24,7 +24,7 @@ class ChunkCashManager {
      * @param $payload
      */
     public function saveChunk($level, $x, $z, $payload){
-        $this->cashes[Binary::writeInt($level).Level::chunkHash($x, $z)] = $payload;
+        $this->caches[Binary::writeInt($level).Level::chunkHash($x, $z)] = $payload;
     }
 
     /**
@@ -36,8 +36,8 @@ class ChunkCashManager {
         if($level instanceof Level){
             $level = $level->getId();
         }
-        if($this->isChunkCashed($level, $x, $z)){
-            unset($this->cashes[Binary::writeInt($level).Level::chunkHash($x, $z)]);
+        if($this->isChunkCached($level, $x, $z)){
+            unset($this->caches[Binary::writeInt($level).Level::chunkHash($x, $z)]);
         }
     }
 
@@ -47,18 +47,18 @@ class ChunkCashManager {
      * @param $z
      * @return bool
      */
-    public function isChunkCashed($levelID, $x, $z){
-        return isset($this->cashes[Binary::writeInt($levelID).Level::chunkHash($x, $z)]);
+    public function isChunkCached($levelID, $x, $z){
+        return isset($this->caches[Binary::writeInt($levelID).Level::chunkHash($x, $z)]);
     }
 
     /**
      * @return array
      */
-    public function getCashedChunks(){
+    public function getCachedChunks(){
         $result = [];
         $x = null;
         $z = null;
-        foreach($this->cashes as $k => $cash){
+        foreach($this->caches as $k => $cache){
             Level::getXZ(substr($k, 5), $x, $z);
             $result[] = [Binary::readInt(substr($k, 0, 4)), $x, $z];
         }
@@ -75,8 +75,8 @@ class ChunkCashManager {
         if($level instanceof Level){
             $level = $level->getId();
         }
-        if($this->isChunkCashed($level, $x, $z)){
-            return $this->cashes[Binary::writeInt($level).Level::chunkHash($x, $z)];
+        if($this->isChunkCached($level, $x, $z)){
+            return $this->caches[Binary::writeInt($level).Level::chunkHash($x, $z)];
         }
         return null;
     }

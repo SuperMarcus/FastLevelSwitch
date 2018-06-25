@@ -15,10 +15,10 @@ class ChunkUpdateTask extends Task {
 
     public function onRun($currentTick){
         if(FastLevelSwitch::$update){
-            foreach($this->fastLevelSwitch->getChunkManager()->getCashedChunks() as $chunk){
+            foreach($this->fastLevelSwitch->getChunkManager()->getCachedChunks() as $chunk){
                 $level = $chunk[0];
                 if(($level = $this->fastLevelSwitch->getServer()->getLevel($level)) instanceof Level){
-                    FastLevelSwitch::cashChunk($chunk[1], $chunk[2], $level);
+                    FastLevelSwitch::cacheChunk($chunk[1], $chunk[2], $level);
                 }else{
                     $this->fastLevelSwitch->getChunkManager()->removeChunk(...$chunk);
                 }

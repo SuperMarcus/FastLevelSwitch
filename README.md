@@ -17,6 +17,6 @@ The default method to teleport a player with chunk pre-loading
 
 Pre-load a selection chunk for a player
 
-`FastLevelSwitch::cashChunk($x, $z, Level $level)`
+`FastLevelSwitch::cacheChunk($x, $z, Level $level)`
 
-Cash a selection chunk of a level
+Cache a specific chunk of a level at ($x, $y)
